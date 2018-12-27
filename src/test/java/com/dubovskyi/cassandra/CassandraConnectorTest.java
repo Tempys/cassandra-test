@@ -23,6 +23,9 @@ public class CassandraConnectorTest {
         schemaRepository = new KeyspaceRepository(session);
     }
 
+
+
+
     @Test
     public void whenCreatingAKeyspace_thenCreated() {
         String keyspaceName = "library";
@@ -42,6 +45,9 @@ public class CassandraConnectorTest {
        // assertEquals(matchedKeyspaces.size(), 1);
       //  assertTrue(matchedKeyspaces.get(2).equals(keyspaceName.toLowerCase()));
     }
+
+
+
 
 
 }

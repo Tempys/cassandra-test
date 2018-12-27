@@ -1,5 +1,6 @@
 package com.dubovskyi.cassandra.repository;
 
+import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.dubovskyi.cassandra.domain.Book;
 
@@ -53,9 +54,9 @@ public class BookRepository {
      *
      * @param book
      */
-    public void insertbook(Book book) {
+    public void insertbook(Book book,String table) {
         StringBuilder sb = new StringBuilder("INSERT INTO ")
-                                           .append(TABLE_NAME).append("(id, title, author, subject,date) ")
+                                           .append(table).append("(id, title, author, subject,date) ")
                                            .append("VALUES (").append(book.getId()).append(", '").append(book.getTitle())
                                            .append("', '").append(book.getAuthor()).append("', '")
                                            .append(book.getSubject()).append("', '")
@@ -91,74 +92,27 @@ public class BookRepository {
         session.execute(query);
     }
 
-/*
-    */
-/**
-     * Select book by id.
-     *
-     * @return
-     *//*
-
-    public Book selectByTitle(String title) {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ").append(TABLE_NAME_BY_TITLE).append(" WHERE title = '").append(title).append("';");
-
-        final String query = sb.toString();
-
-        ResultSet rs = session.execute(query);
-
-        List<Book> books = new ArrayList<Book>();
-
-        for (Row r : rs) {
-            Book s = new Book(r.getUUID("id"), r.getString("title"), null, null);
-            books.add(s);
-        }
-
-        return books.get(0);
+    public ResultSet selectTimePerid(){
+       String request = "SELECT * FROM books  LIMIT 100 ALLOW FILTERING ";
+       ResultSet rows = session.execute(request);
+        System.out.println(rows.all().size());
+        return  rows;
     }
 
-    */
-/**
-     * Select all books from books
-     *
-     * @return
-     *//*
-
-    public List<Book> selectAll() {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ").append(TABLE_NAME);
-
-        final String query = sb.toString();
-        ResultSet rs = session.execute(query);
-
-        List<Book> books = new ArrayList<Book>();
-
-        for (Row r : rs) {
-            Book book = new Book(r.getUUID("id"), r.getString("title"), r.getString("author"), r.getString("subject"));
-            books.add(book);
-        }
-        return books;
+    public ResultSet selectTimeWithIndex(){
+        String request = "SELECT * FROM books_index1   LIMIT 100 ";
+        ResultSet rows = session.execute(request);
+        System.out.println(rows.all().size());
+        return  rows;
     }
 
-    */
-/**
-     * Select all books from booksByTitle
-     * @return
-     *//*
-
-    public List<Book> selectAllBookByTitle() {
-        StringBuilder sb = new StringBuilder("SELECT * FROM ").append(TABLE_NAME_BY_TITLE);
-
-        final String query = sb.toString();
+    public long getCountOfItem() {
+        final String query = "select count(id) from books_small";
         ResultSet rs = session.execute(query);
 
-        List<Book> books = new ArrayList<Book>();
+        return rs.one().getLong(0);
 
-        for (Row r : rs) {
-            Book book = new Book(r.getUUID("id"), r.getString("title"), null, null);
-            books.add(book);
-        }
-        return books;
     }
-*/
 
     /**
      * Delete a book by title.

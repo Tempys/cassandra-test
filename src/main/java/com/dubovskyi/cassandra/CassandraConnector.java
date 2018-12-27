@@ -1,6 +1,8 @@
 package com.dubovskyi.cassandra;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.Session;
 
 public class CassandraConnector {
@@ -8,7 +10,13 @@ public class CassandraConnector {
     private Session session;
 
     public void connect(String node, Integer port) {
+        PoolingOptions poolingOptions = new PoolingOptions()
+                        .setConnectionsPerHost(HostDistance.LOCAL, 2, 3);
+
+
         Cluster.Builder b = Cluster.builder().addContactPoint(node);
+        b.withPoolingOptions(poolingOptions);
+
         if (port != null) {
             b.withPort(port);
         }

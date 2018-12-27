@@ -1,6 +1,7 @@
 package com.dubovskyi.cassandra;
 
 
+import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.dubovskyi.cassandra.domain.Book;
 import com.dubovskyi.cassandra.repository.BookRepository;
@@ -54,7 +55,7 @@ public class BookRepositoryIntegrationTest {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         book.setDate(df.format(new Date()));
 
-        bookRepository.insertbook(book);
+        bookRepository.insertbook(book,"books");
 
     }
 
@@ -62,7 +63,7 @@ public class BookRepositoryIntegrationTest {
     public void insert_1_mln(){
 
         long start = System.currentTimeMillis();
-        for(int i =0;i< 1_000_000;i++){
+        for(int i =0;i< 100_000 ;i++){
 
             Book book = new Book();
             book.setAuthor("anderson"+i);
@@ -73,10 +74,44 @@ public class BookRepositoryIntegrationTest {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             book.setDate(df.format(new Date()));
 
-            bookRepository.insertbook(book);
+            bookRepository.insertbook(book,"books_index1");
+          //  if(i%500 == 1 )sleep();
         }
 
         System.out.println("insert 1 mln rows for :"+(System.currentTimeMillis() - start));
+    }
+
+
+    public void sleep(){
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void selectCountLines(){
+        long item = bookRepository.getCountOfItem();
+        System.out.println(item);
+
+    }
+
+    @Test
+    public void selectSimpleTimeRange(){
+        long start = System.currentTimeMillis();
+        ResultSet rows = bookRepository.selectTimePerid();
+        System.out.println("select 100k rows for :"+(System.currentTimeMillis() - start));
+        System.out.println( rows.one());
+
+    }
+
+    @Test
+    public void selectTimeRangeWithIndex(){
+        long start = System.currentTimeMillis();
+        ResultSet rows = bookRepository.selectTimeWithIndex();
+        System.out.println("select 100k rows for :"+(System.currentTimeMillis() - start));
+        System.out.println( rows.one());
     }
 
 }
